@@ -1,6 +1,8 @@
 import streamlit as st
 from frontend.utils import apply_custom_css
 from frontend.components.home_page_cols import create_home_page_cols
+from frontend.components.sidebar import create_sidebar
+from frontend.components.footer import create_footer
 
 # Initialize session state
 def initialize_session_state():
@@ -12,6 +14,10 @@ def initialize_session_state():
         st.session_state.generated_scenes = []
     if 'generation_history' not in st.session_state:
         st.session_state.generation_history = []
+    if 'final_video_path' not in st.session_state:
+        st.session_state.final_video_path = None
+    if "selection_order" not in st.session_state:
+        st.session_state.selection_order = []
         
 def run():
     initialize_session_state()
@@ -20,7 +26,8 @@ def run():
     st.set_page_config(
         page_title="Manimatic",
         page_icon="🎬",
-        layout="wide"
+        layout="wide",
+        initial_sidebar_state="collapsed"
     )
     
     # Header Section with Custom CSS
@@ -30,3 +37,9 @@ def run():
 
     # Main Layout
     create_home_page_cols()
+
+    # Sidebar with project info and controls
+    create_sidebar()
+
+    # Footer Section
+    create_footer()

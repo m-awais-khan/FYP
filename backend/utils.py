@@ -5,7 +5,7 @@ class FallbackScene(Scene):
     def construct(self):
         text = Text("Sorry, something went wrong!")
         self.play(Write(text))
-        self.wait(2)
+        self.wait(1)
 '''
 
 def code_validator(code):

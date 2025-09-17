@@ -6,6 +6,7 @@ from backend.services.clean_code import code_cleaner
 from backend.services.manim_processor import execute_manim_code
 import os
 import time
+from frontend.utils import display_video, scene_manager
 
 class HomePageColumns:
     def __init__(self):
@@ -56,9 +57,10 @@ class HomePageColumns:
             # Generation history
             if st.session_state.generation_history:
                 st.header("📚 Recent Prompts")
-                for idx, prompt in enumerate(reversed(st.session_state.generation_history[-5:]), start=1):
-                    with st.expander(f"Prompt {len(st.session_state.generation_history) - idx + 1}"):
-                        st.text(prompt)
+                with st.expander("View Last 5 Prompts", expanded=True):
+                    for idx, prompt in enumerate(reversed(st.session_state.generation_history[-5:]), start=1):
+                        with st.expander(f"Prompt {len(st.session_state.generation_history) - idx + 1}"):
+                            st.text(prompt)
                     
     def display_generate_button(self):
         with self.col_gen:
@@ -196,6 +198,12 @@ class HomePageColumns:
                         st.session_state.current_status = "ready"
                         st.session_state.processing_scene_id = None
                         st.error("❌ Failed to generate Manim code")
+            
+            # Display video or info
+            display_video()
+            
+            # Scene management
+            scene_manager(show_code=self.show_code)
 
 
 def create_home_page_cols():

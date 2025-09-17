@@ -3,6 +3,7 @@ import tempfile
 import os
 import subprocess
 import shutil
+from config import OUTPUT_DIR
 
 def execute_manim_code(code, scene_id, quality="720p"):
     """
@@ -78,7 +79,7 @@ def execute_manim_code(code, scene_id, quality="720p"):
                         video_path = os.path.join(root, file)
                         
                         # Create output directory if it doesn't exist
-                        output_dir = "generated_videos"
+                        output_dir = OUTPUT_DIR
                         os.makedirs(output_dir, exist_ok=True)
 
                         # Copy video to output directory
