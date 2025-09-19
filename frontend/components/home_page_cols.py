@@ -25,29 +25,32 @@ class HomePageColumns:
             # Subject Selection
             self.subject = st.selectbox(
                 "Select Subject Area",
-                ["Mathematics", "Computer Science", "Physics", "General"]
+                ["Mathematics", "Computer Science", "Physics", "General"],
+                disabled=(st.session_state.current_status == "generating")
             )
 
             # Animation type # Later check, animation type -> play func: input
             self.animation_type = st.selectbox(
                 "Animation Type",
-                ["Visualization", "Explanation", "Proof", "Algorithm Demo", "Graph Plot"]
+                ["Visualization", "Explanation", "Proof", "Algorithm Demo", "Graph Plot"],
+                disabled=(st.session_state.current_status == "generating")
             )
         
             # Main prompt input
             self.user_prompt = st.text_area(
                 "Describe your animation",
                 placeholder="Example: Create an animation showing the Pythagorean theorem with a right triangle, highlighting the squares on each side and demonstrating that a² + b² = c²",
-                height=100
+                height=100,
+                disabled=(st.session_state.current_status == "generating")
             )
 
             # Additional parameters
-            with st.expander("⚙️ Advanced Options"):
-                self.duration = st.slider("Animation Duration (seconds)", 3, 15, 8)
-                self.quality = st.selectbox("Video Quality", ["480p", "720p", "1080p"])
-                self.background_color = st.color_picker("Background Color", "#000000")
-                self.text_color = st.color_picker("Text Color", "#FFFFFF")
-                self.show_code = st.checkbox("Show Generated Code", value=False)
+            with st.expander("Advanced Options", icon="⚙️"):
+                self.duration = st.slider("Animation Duration (seconds)", 3, 15, 8, disabled=(st.session_state.current_status == "generating"))
+                self.quality = st.selectbox("Video Quality", ["480p", "720p", "1080p"], disabled=(st.session_state.current_status == "generating"))
+                self.background_color = st.color_picker("Background Color", "#000000", disabled=(st.session_state.current_status == "generating"))
+                self.text_color = st.color_picker("Text Color", "#FFFFFF", disabled=(st.session_state.current_status == "generating"))
+                self.show_code = st.checkbox("Show Generated Code", value=False, disabled=(st.session_state.current_status == "generating"))
 
             # Generate buttons
             self.col_gen, self.col_regen = st.columns(2)

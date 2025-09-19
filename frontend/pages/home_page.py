@@ -4,8 +4,8 @@ from frontend.components.home_page_cols import create_home_page_cols
 from frontend.components.sidebar import create_sidebar
 from frontend.components.footer import create_footer
 
-# Initialize session state
-def initialize_session_state():
+# Initialize session states
+def initialize_session_states():
     if 'current_status' not in st.session_state:
         st.session_state.current_status = "ready"
     if 'processing_scene_id' not in st.session_state:
@@ -20,7 +20,7 @@ def initialize_session_state():
         st.session_state.selection_order = []
         
 def run():
-    initialize_session_state()
+    initialize_session_states()
 
     # Streamlit page configuration
     st.set_page_config(
