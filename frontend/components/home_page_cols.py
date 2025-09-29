@@ -14,13 +14,13 @@ class HomePageColumns:
         self.col_gen, self.col_regen = None, None
 
     def create_columns(self):
-        self.col1, self.col2 = st.columns([1, 1.4])
+        self.col1, self.col2 = st.columns([1, 1.4], gap="large")
         self.display_left_column()
         self.display_right_column()
 
     def display_left_column(self):
         with self.col1:
-            st.header("📝 Prompt Input")
+            st.header("📝 Prompt Input", divider=True)
             
             # Subject Selection
             self.subject = st.selectbox(
@@ -53,68 +53,78 @@ class HomePageColumns:
                 self.show_code = st.checkbox("Show Generated Code", value=False, disabled=(st.session_state.current_status == "generating"))
 
             # Generate buttons
-            self.col_gen, self.col_regen = st.columns(2)
+            self.col_gen, self.col_regen = st.columns(2, gap="medium", border=True)
             self.display_generate_button()
             self.display_regenerate_button()
 
             # Generation history
-            if st.session_state.generation_history:
-                st.header("📚 Recent Prompts")
-                with st.expander("View Last 5 Prompts", expanded=True):
-                    for idx, prompt in enumerate(reversed(st.session_state.generation_history[-5:]), start=1):
-                        with st.expander(f"Prompt {len(st.session_state.generation_history) - idx + 1}"):
-                            st.text(prompt)
+            if not st.session_state.generation_history:
+                return
+
+            st.header("📚 Recent Prompts", divider=True)
+            with st.expander("View Last 5 Prompts", expanded=True, icon="📜"):
+                for idx, prompt in enumerate(reversed(st.session_state.generation_history[-5:]), start=1):
+                    with st.expander(f"Prompt {len(st.session_state.generation_history) - idx + 1}", icon="📑"):
+                        st.text(prompt)
                     
     def display_generate_button(self):
         with self.col_gen:
-            if st.button("🎬 Generate Scene", type="primary", use_container_width=True,
+            if not st.button("Generate Scene", type="primary", icon='🎬', use_container_width=True,
                          disabled=(st.session_state.current_status == "generating")):
-                if self.user_prompt.strip():
-                    # Generate unique scene ID
-                    scene_id = str(uuid.uuid4())[:8]
+                return
+                
+            if not self.user_prompt.strip():
+                st.error("Please enter a prompt first!", icon ="❌")
+                return
+            
+            # Generate unique scene ID
+            scene_id = str(uuid.uuid4())[:8]
 
-                    # Set generating status
-                    st.session_state.current_status = "generating"
-                    st.session_state.processing_scene_id = scene_id
+            # Set generating status
+            st.session_state.current_status = "generating"
+            st.session_state.processing_scene_id = scene_id
 
-                    # Add to scenes list
-                    scene_data = {
-                        "id": scene_id,
-                        "prompt": self.user_prompt,
-                        "subject": self.subject,
-                        "type": self.animation_type,
-                        "duration": self.duration,
-                        "quality": self.quality,
-                        "background_color": self.background_color,
-                        "text_color": self.text_color,
-                        "status": "generating",
-                        "video_path": None,
-                        "code": None,
-                        "error": None,
-                        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    }
+            # Add to scenes list
+            scene_data = {
+                "id": scene_id,
+                "prompt": self.user_prompt,
+                "subject": self.subject,
+                "type": self.animation_type,
+                "duration": self.duration,
+                "quality": self.quality,
+                "background_color": self.background_color,
+                "text_color": self.text_color,
+                "status": "generating",
+                "video_path": None,
+                "code": None,
+                "error": None,
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
 
-                    st.session_state.generated_scenes.append(scene_data)
-                    st.session_state.generation_history.append(self.user_prompt)
-                    st.rerun()
-                else:
-                    st.error("Please enter a prompt first!")
+            st.session_state.generated_scenes.append(scene_data)
+            st.session_state.generation_history.append(self.user_prompt)
+            st.rerun()
 
     def display_regenerate_button(self):
         with self.col_regen:
-            if st.button("🔄 Regenerate Last", use_container_width=True,
+            if not st.button("Regenerate Last", icon="🔄", use_container_width=True,
                          disabled=(st.session_state.current_status == "generating")):
-                if st.session_state.generation_history and st.session_state.generated_scenes:
-                    # Get last scene and regenerate
-                    last_scene = st.session_state.generated_scenes[-1]
-                    last_scene["status"] = "generating"
-                    st.session_state.current_status = "generating"
-                    st.session_state.processing_scene_id = last_scene["id"]
-                    st.rerun()
+                return
+            
+            if not (st.session_state.generation_history and st.session_state.generated_scenes):
+                st.error("No previous prompt to regenerate!", icon="❗")
+                return
+            
+            # Get last scene and regenerate
+            last_scene = st.session_state.generated_scenes[-1]
+            last_scene["status"] = "generating"
+            st.session_state.current_status = "generating"
+            st.session_state.processing_scene_id = last_scene["id"]
+            st.rerun()
 
     def display_right_column(self):
         with self.col2:
-            st.header("🎥 Video Preview & Management")
+            st.header("🎥 Video Preview & Management", divider=True)
 
             # Handle generation process
             if st.session_state.current_status == "generating" and st.session_state.processing_scene_id:
@@ -151,6 +161,7 @@ class HomePageColumns:
                         background_color=current_scene["background_color"],
                         text_color=current_scene["text_color"]
                     )
+                    print("Generated Code:\n", code)  # Debug log
 
                     if code:
                         progress_bar.progress(50)
